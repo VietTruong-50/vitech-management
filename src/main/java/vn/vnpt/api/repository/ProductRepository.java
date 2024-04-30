@@ -30,8 +30,8 @@ public class ProductRepository {
 
     public List<AttributeListOut> getAllAttribute() {
         var outputs = procedureCallerV3.callOneRefCursor("attribute_list", List.of(
-                        ProcedureParameter.outputParam("out_result", String.class)
-                        , ProcedureParameter.refCursorParam("out_cur")),
+                        ProcedureParameter.outputParam("out_result", String.class),
+                        ProcedureParameter.refCursorParam("out_cur")),
                 AttributeListOut.class
         );
         String result = (String) outputs.get("out_result");
@@ -142,7 +142,7 @@ public class ProductRepository {
         return outList.get(0);
     }
 
-    public   List<ProductDetailOut.TagProduct> getProductTags(String productId) {
+    public List<ProductDetailOut.TagProduct> getProductTags(String productId) {
         var outputs = procedureCallerV3.callOneRefCursor("tag_product_list",
                 List.of(
                         ProcedureParameter.inputParam("prs_product_id", String.class, productId),

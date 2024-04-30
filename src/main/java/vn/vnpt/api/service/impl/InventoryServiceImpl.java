@@ -15,6 +15,7 @@ import vn.vnpt.api.dto.out.product.ProductDetailOut;
 import vn.vnpt.api.dto.out.product.ProductListOut;
 import vn.vnpt.api.dto.out.product.attribute.AttributeListOut;
 import vn.vnpt.api.dto.out.product.attribute.ColorInfoOut;
+import vn.vnpt.api.repository.CategoryRepository;
 import vn.vnpt.api.repository.ProductRepository;
 import vn.vnpt.api.service.DriveService;
 import vn.vnpt.api.service.InventoryService;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final DriveService driveService;
     private final ObjectMapper objectMapper;
 
@@ -153,19 +155,24 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<AttributeListOut> getAllAttribute() {
+    public List<AttributeListOut> getAllAttribute(String categoryId) {
+        var category = categoryRepository.getCategoryDetail(categoryId);
+
+        var ids = Stream.of(category.getAttributeIds().split(",")).map(String::trim).toList();
+
         var rs = productRepository.getAllAttribute();
         ObjectMapper objectMapper = new ObjectMapper();
 
         return rs.stream()
+                .filter(attribute -> ids.contains(attribute.getAttributeId()))
                 .peek(attribute -> {
-                    if (!Objects.equals(attribute.getName(), "Màu sắc")) {
+                    if (!attribute.getName().contains("Color")) {
                         attribute.setValueList(Stream.of(attribute.getValues().split(","))
                                 .map(String::trim)
                                 .collect(Collectors.toList()));
                     } else {
                         try {
-                            List<ColorInfoOut> colorList = objectMapper.readValue(attribute.getValues(), new TypeReference<List<ColorInfoOut>>() {});
+                            List<ColorInfoOut> colorList = objectMapper.readValue(attribute.getValues(), new TypeReference<>() {});
                             attribute.setValueList(colorList);
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -99,10 +99,10 @@ public class InventoryController extends AbstractResponseController {
 
     @GetMapping(value = {"/attribute/list"}, produces = "application/json")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> getAllAttribute() {
+    public DeferredResult<ResponseEntity<?>> getAllAttribute(String categoryId) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /products/attribute/list");
-            var rs = inventoryService.getAllAttribute();
+            var rs = inventoryService.getAllAttribute(categoryId);
             log.info("[RESPONSE]: res: Success!");
             return rs;
         });

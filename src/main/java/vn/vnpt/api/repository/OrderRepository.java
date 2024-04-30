@@ -10,6 +10,7 @@ import vn.vnpt.api.dto.out.order.OrderListOut;
 import vn.vnpt.api.enums.OrderStatusEnum;
 import vn.vnpt.api.repository.helper.ProcedureCallerV3;
 import vn.vnpt.api.repository.helper.ProcedureParameter;
+import vn.vnpt.common.Common;
 import vn.vnpt.common.constant.DatabaseStatus;
 import vn.vnpt.common.exception.ApiErrorException;
 import vn.vnpt.common.exception.NotFoundException;
@@ -17,6 +18,7 @@ import vn.vnpt.common.exception.model.ApiError;
 import vn.vnpt.common.model.PagingOut;
 import vn.vnpt.common.model.SortPageIn;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +45,7 @@ public class OrderRepository {
         return outList.get(0);
     }
 
-    public PagingOut<OrderListOut> listOrders(OrderStatusEnum status, SortPageIn sortPageIn) {
+    public PagingOut<OrderListOut> listOrders(LocalDate fromDate, LocalDate toDate, OrderStatusEnum status, SortPageIn sortPageIn) {
         if (status.equals(OrderStatusEnum.ALL)) {
             status = null;
         }
@@ -56,6 +58,8 @@ public class OrderRepository {
                         ProcedureParameter.inputParam("prn_page_index", Integer.class, sortPageIn.getPage()),
                         ProcedureParameter.inputParam("prn_page_size", Integer.class, sortPageIn.getMaxSize()),
                         ProcedureParameter.inputParam("prs_key_search", String.class, sortPageIn.getKeySearch()),
+                        ProcedureParameter.inputParam("prs_create_date_from", String.class, !Common.isNullOrEmpty(fromDate) ? fromDate.toString() : null),
+                        ProcedureParameter.inputParam("prs_create_date_to", String.class, !Common.isNullOrEmpty(toDate) ? toDate.toString() : null),
                         ProcedureParameter.outputParam("out_total", Long.class),
                         ProcedureParameter.outputParam("out_result", String.class),
                         ProcedureParameter.refCursorParam("out_cur")
@@ -70,7 +74,7 @@ public class OrderRepository {
     public void updateOrderStatus(UpdateOrderStatus updateOrderStatus) {
         var outputs = procedureCallerV3.callNoRefCursor("order_update_status", List.of(
                 ProcedureParameter.inputParam("prs_order_id", String.class, updateOrderStatus.getOrderId()),
-                ProcedureParameter.inputParam("prs_status", Integer.class, updateOrderStatus.getOrderStatusEnum()),
+                ProcedureParameter.inputParam("prs_status", Integer.class, updateOrderStatus.getOrderStatusEnum().value),
                 ProcedureParameter.outputParam("out_result", String.class))
         );
         String result = (String) outputs.get("out_result");

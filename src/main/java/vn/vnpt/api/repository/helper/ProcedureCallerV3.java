@@ -61,7 +61,7 @@ public class ProcedureCallerV3 {
 						declareParameters.add(new SqlOutParameter(parameter.getName(), Types.TIMESTAMP));
 					} else if (parameter.getType().equals(Boolean.class)) {
 						declareParameters.add(new SqlOutParameter(parameter.getName(), Types.BOOLEAN));
-					} else {
+					}  else {
 						throw new IllegalStateException("Not support type: " + parameter.getType());
 					}
 				}

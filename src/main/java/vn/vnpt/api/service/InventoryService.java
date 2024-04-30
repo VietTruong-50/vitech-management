@@ -20,5 +20,5 @@ public interface InventoryService {
     ProductDetailOut getProductDetail(String productId);
     PagingOut<ProductListOut> filterProducts(ProductFilterIn productFilterIn, SortPageIn sortPageIn);
     PagingOut<ProductListOut> findAllBySubCategory(String subCategoryId, SortPageIn sortPageIn);
-    List<AttributeListOut> getAllAttribute();
+    List<AttributeListOut> getAllAttribute(String categoryId);
 }

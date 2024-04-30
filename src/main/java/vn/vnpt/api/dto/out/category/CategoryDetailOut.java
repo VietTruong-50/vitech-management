@@ -17,4 +17,6 @@ public class CategoryDetailOut {
     private String userCreated;
     @Col("created_date")
     private String createdDate;
+    @Col("attribute_ids")
+    private String attributeIds;
 }

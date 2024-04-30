@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PagingOut<OrderListOut> getAllOrders(OrderStatusEnum status, SortPageIn sortPageIn) {
-        var page = orderRepository.listOrders(status, sortPageIn);
+        var page = orderRepository.listOrders(null, null, status, sortPageIn);
         for (var it : page.getData()) {
             it.setOrderDetailOuts(orderRepository.getOrderDetailList(it.getOrderCode()));
         }
