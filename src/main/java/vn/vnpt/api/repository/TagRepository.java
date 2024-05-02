@@ -17,10 +17,23 @@ public class TagRepository {
     private final ProcedureCallerV3 procedureCallerV3;
 
 
-    public List<TagListOut> listAllByCategory(SortPageIn sortPageIn) {
+    public String createNewTag(String categoryId, String tagName) {
+        Map<String, Object> outputs = procedureCallerV3.callNoRefCursor("tag_create_new",
+                List.of(
+                        ProcedureParameter.inputParam("prs_category_id", String.class, categoryId),
+                        ProcedureParameter.inputParam("prs_tag_name", String.class, tagName),
+                        ProcedureParameter.outputParam("out_tag_id", String.class),
+                        ProcedureParameter.outputParam("out_result", String.class)
+                )
+        );
+
+        return (String) outputs.get("out_tag_id");
+    }
+
+    public List<TagListOut> listAllByCategory(String categoryId) {
         Map<String, Object> outputs = procedureCallerV3.callOneRefCursor("tag_list",
                 List.of(
-                        ProcedureParameter.inputParam("prs_key_search", String.class, sortPageIn.getKeySearch()),
+                        ProcedureParameter.inputParam("prs_category_id", String.class, categoryId),
                         ProcedureParameter.outputParam("out_total", Long.class),
                         ProcedureParameter.outputParam("out_result", String.class),
                         ProcedureParameter.refCursorParam("out_cur")

@@ -34,10 +34,10 @@ public class StatisticRepository {
             throw new RuntimeException("call statistical_data failed");
         }
 
-        int productNumbers = ((BigDecimal) outputs.get("out_product_numbers")).intValueExact();
-        int customerNumbers = ((BigDecimal) outputs.get("out_customer_numbers")).intValueExact();
-        int orderNumbers = ((BigDecimal) outputs.get("out_order_numbers")).intValueExact();
-        long revenue = ((BigDecimal) outputs.get("out_revenue")).longValueExact();
+        int productNumbers = !Common.isNullOrEmpty(outputs.get("out_product_numbers")) ? ((BigDecimal) outputs.get("out_product_numbers")).intValueExact() : 0;
+        int customerNumbers = !Common.isNullOrEmpty(outputs.get("out_customer_numbers")) ? ((BigDecimal) outputs.get("out_customer_numbers")).intValueExact() : 0;
+        int orderNumbers = !Common.isNullOrEmpty(outputs.get("out_order_numbers")) ? ((BigDecimal) outputs.get("out_order_numbers")).intValueExact() : 0;
+        long revenue = !Common.isNullOrEmpty(outputs.get("out_revenue")) ? ((BigDecimal) outputs.get("out_revenue")).longValueExact() : 0;
 
         return StatisticalData.builder()
                 .customerNumbers(customerNumbers)

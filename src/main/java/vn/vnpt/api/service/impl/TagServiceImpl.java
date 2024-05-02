@@ -14,7 +14,7 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     @Override
-    public List<TagListOut> listTag(SortPageIn sortPageIn) {
-        return tagRepository.listAllByCategory(sortPageIn);
+    public List<TagListOut> listTag(String categoryId) {
+        return tagRepository.listAllByCategory(categoryId);
     }
 }

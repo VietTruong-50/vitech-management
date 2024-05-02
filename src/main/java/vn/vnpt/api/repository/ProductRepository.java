@@ -152,9 +152,10 @@ public class ProductRepository {
                 ProductDetailOut.TagProduct.class
         );
         List<ProductDetailOut.TagProduct> outList = (List<ProductDetailOut.TagProduct>) outputs.get("out_cur");
-        if (outList == null || outList.isEmpty()) {
-            throw new NotFoundException("tag_product_list not found!");
-        }
+        
+//        if (outList == null || outList.isEmpty()) {
+//            throw new NotFoundException("tag_product_list not found!");
+//        }
 
         return outList;
     }

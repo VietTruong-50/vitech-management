@@ -15,8 +15,10 @@ import vn.vnpt.api.dto.out.product.ProductDetailOut;
 import vn.vnpt.api.dto.out.product.ProductListOut;
 import vn.vnpt.api.dto.out.product.attribute.AttributeListOut;
 import vn.vnpt.api.dto.out.product.attribute.ColorInfoOut;
+import vn.vnpt.api.dto.out.tag.TagListOut;
 import vn.vnpt.api.repository.CategoryRepository;
 import vn.vnpt.api.repository.ProductRepository;
+import vn.vnpt.api.repository.TagRepository;
 import vn.vnpt.api.service.DriveService;
 import vn.vnpt.api.service.InventoryService;
 import vn.vnpt.common.Common;
@@ -26,7 +28,6 @@ import vn.vnpt.common.model.SortPageIn;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 public class InventoryServiceImpl implements InventoryService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
     private final DriveService driveService;
     private final ObjectMapper objectMapper;
 
@@ -54,13 +56,35 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
+        if (!Common.isNullOrEmpty(createProductIn.getTagIds())) {
+            var listTag = tagRepository.listAllByCategory(createProductIn.getCategoryId());
+            var newListTags = createProductIn.getTagIds();
+            for (String tagId : newListTags) {
+                boolean tagExists = false;
+                for (TagListOut tag : listTag) {
+                    if (tag.getTagId().equals(tagId)) {
+                        tagExists = true;
+                        break;
+                    }
+                }
+                if (!tagExists) {
+                    newListTags.remove(tagId);
+                    var id = tagRepository.createNewTag(createProductIn.getCategoryId(), tagId);
+                    newListTags.add(id);
+                }
+            }
+            createProductIn.setTagIds(newListTags);
+        }
+
         String productId = productRepository.createNewProduct(createProductIn, userId, fileRes.getUrl(), imageUrlList);
 
-        for (String key : createProductIn.getAttributes().keySet()) {
-            List<String> values = createProductIn.getAttributes().get(key);
+        if (!Common.isNullOrEmpty(createProductIn.getAttributes())) {
+            for (String key : createProductIn.getAttributes().keySet()) {
+                List<String> values = createProductIn.getAttributes().get(key);
 
-            for (String value : values) {
-                productRepository.addAttribute(value, key, productId);
+                for (String value : values) {
+                    productRepository.addAttribute(value, key, productId);
+                }
             }
         }
     }
@@ -116,7 +140,7 @@ public class InventoryServiceImpl implements InventoryService {
         var productDetail = getProductDetail(productId);
         var folderId = driveService.checkFolderExists(productDetail.getName());
 
-        if(Common.isNullOrEmpty(folderId)){
+        if (Common.isNullOrEmpty(folderId)) {
             driveService.deleteFolder(folderId);
         }
 
@@ -172,7 +196,8 @@ public class InventoryServiceImpl implements InventoryService {
                                 .collect(Collectors.toList()));
                     } else {
                         try {
-                            List<ColorInfoOut> colorList = objectMapper.readValue(attribute.getValues(), new TypeReference<>() {});
+                            List<ColorInfoOut> colorList = objectMapper.readValue(attribute.getValues(), new TypeReference<>() {
+                            });
                             attribute.setValueList(colorList);
                         } catch (Exception e) {
                             e.printStackTrace();
