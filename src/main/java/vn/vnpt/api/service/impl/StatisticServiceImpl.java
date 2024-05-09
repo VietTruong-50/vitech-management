@@ -3,7 +3,9 @@ package vn.vnpt.api.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.vnpt.api.dto.out.order.OrderListOut;
+import vn.vnpt.api.dto.out.statistic.OrderStatusStatistic;
 import vn.vnpt.api.dto.out.statistic.StatisticalData;
+import vn.vnpt.api.dto.out.statistic.TopSellerProducts;
 import vn.vnpt.api.enums.OrderStatusEnum;
 import vn.vnpt.api.repository.OrderRepository;
 import vn.vnpt.api.repository.StatisticRepository;
@@ -36,8 +38,8 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public Object top5seller(LocalDate startDate, LocalDate endDate) {
-        return null;
+    public List<TopSellerProducts> top5seller(LocalDate startDate, LocalDate endDate) {
+        return statisticRepository.getTopSellerProducts(startDate, endDate, 5);
     }
 
     @Override
@@ -50,11 +52,11 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<Integer> getOrderStatus(Integer year) {
-        List<Integer> orderNumbers = new ArrayList<>();
+    public List<OrderStatusStatistic> getOrderStatus(Integer year) {
+        List<OrderStatusStatistic> orderNumbers = new ArrayList<>();
         for (var it : OrderStatusEnum.values()) {
             if(!it.name().equals(OrderStatusEnum.ALL.name())){
-                orderNumbers.add(statisticRepository.getOrderStatus(year, it.name()));
+                orderNumbers.add(new OrderStatusStatistic(statisticRepository.getOrderStatus(year, it.name()), it.name()));
             }
         }
         return orderNumbers;

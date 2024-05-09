@@ -1,7 +1,9 @@
 package vn.vnpt.api.service;
 
 import vn.vnpt.api.dto.out.order.OrderListOut;
+import vn.vnpt.api.dto.out.statistic.OrderStatusStatistic;
 import vn.vnpt.api.dto.out.statistic.StatisticalData;
+import vn.vnpt.api.dto.out.statistic.TopSellerProducts;
 import vn.vnpt.common.model.PagingOut;
 import vn.vnpt.common.model.SortPageIn;
 
@@ -13,9 +15,9 @@ public interface StatisticService {
 
      PagingOut<OrderListOut> statisticSuccessOrder(LocalDate startDate, LocalDate endDate, SortPageIn sortPageIn);
 
-     Object top5seller(LocalDate startDate, LocalDate endDate);
+     List<TopSellerProducts> top5seller(LocalDate startDate, LocalDate endDate);
 
      List<Long> getRevenue(Integer year);
 
-     List<Integer> getOrderStatus(Integer year);
+     List<OrderStatusStatistic> getOrderStatus(Integer year);
 }

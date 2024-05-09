@@ -37,7 +37,7 @@ public class StatisticController extends AbstractResponseController {
 
     @GetMapping(value = "/orders")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> statisticSuccessOrderAndOrderDateBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+    public DeferredResult<ResponseEntity<?>> statisticSuccessOrder(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
                                                                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
                                                                                       SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
@@ -63,7 +63,7 @@ public class StatisticController extends AbstractResponseController {
 
     @GetMapping(value = "/yearly-statistics")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> getStatistics(@RequestParam Integer year) {
+    public DeferredResult<ResponseEntity<?>> getYearlyStatistics(@RequestParam Integer year) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /yearly-statistics");
             var revenue = statisticService.getRevenue(year);

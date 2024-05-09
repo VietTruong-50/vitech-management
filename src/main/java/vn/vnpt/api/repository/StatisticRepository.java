@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.vnpt.api.dto.out.order.OrderListOut;
 import vn.vnpt.api.dto.out.statistic.StatisticalData;
+import vn.vnpt.api.dto.out.statistic.TopSellerProducts;
 import vn.vnpt.api.enums.OrderStatusEnum;
 import vn.vnpt.api.repository.helper.ProcedureCallerV3;
 import vn.vnpt.api.repository.helper.ProcedureParameter;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public class StatisticRepository {
     private final ProcedureCallerV3 procedureCallerV3;
 
@@ -69,5 +71,15 @@ public class StatisticRepository {
 
         BigDecimal orderNumber = (BigDecimal) outputs.get("out_number_order");
         return !Common.isNullOrEmpty(orderNumber) ? orderNumber.intValueExact() : 0;
+    }
+
+    public List<TopSellerProducts> getTopSellerProducts(LocalDate startDate, LocalDate endDate, int limit) {
+        var outputs = procedureCallerV3.callOneRefCursor("get_top_selling_products", List.of(
+                ProcedureParameter.inputParam("prs_create_date_from", String.class, !Common.isNullOrEmpty(startDate) ? startDate.toString() : null),
+                ProcedureParameter.inputParam("prs_create_date_to", String.class, !Common.isNullOrEmpty(endDate) ? endDate.toString() : null),
+                ProcedureParameter.inputParam("prs_limit", Integer.class, limit),
+                ProcedureParameter.refCursorParam("out_cur")
+        ), TopSellerProducts.class);
+        return (List<TopSellerProducts>) outputs.get("out_cur");
     }
 }
