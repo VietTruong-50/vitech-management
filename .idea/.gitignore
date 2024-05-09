@@ -6,4 +6,4 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-../google-cred.json
+google-cred.json
