@@ -3,6 +3,9 @@ package vn.vnpt.api.dto.out.user;
 import lombok.Data;
 import vn.vnpt.api.repository.helper.Col;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 public class UserListOut {
     @Col("id")
@@ -15,4 +18,16 @@ public class UserListOut {
     private String lastName;
     @Col("username")
     private String userName;
+
+    private List<Group> groupList;
+
+
+    @Data
+    public static class Group{
+        @Col("group_name")
+        private String groupName;
+        @Col("group_id")
+        private String groupId;
+    }
+
 }

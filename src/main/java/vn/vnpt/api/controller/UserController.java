@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
-import vn.vnpt.api.dto.in.UpdateUserIn;
+import vn.vnpt.api.dto.in.*;
 import vn.vnpt.api.enums.OrderStatusEnum;
 import vn.vnpt.api.service.CustomerService;
 import vn.vnpt.api.service.UserService;
@@ -23,37 +23,69 @@ public class UserController extends AbstractResponseController {
     private final CustomerService customerService;
     private final UserService userService;
 
-    @GetMapping(value = "/list-filter", produces = "application/json")
+    @PostMapping(value = "/list-filter", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> getAllUsers(SortPageIn sortPageIn, @RequestParam("role") String role) {
+    public DeferredResult<ResponseEntity<?>> getAllUsers(@RequestBody UserListIn userListIn, SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /user/list-filter");
-            var rs = userService.getAllUsers(sortPageIn, role);
+            var rs = userService.getAllUsers(sortPageIn, userListIn);
             log.info("[RESPONSE]: res: Success!");
             return rs;
         });
     }
 
-    @PostMapping(value = "/user/{userId}", produces = "application/json")
+    @PostMapping(value = "/create-new", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> updateUser(@PathVariable("userId") String userId, @RequestBody UpdateUserIn userRequest) {
+    public DeferredResult<ResponseEntity<?>> createNewUser(@RequestBody CreateUserIn createUserIn) {
         return responseEntityDeferredResult(() -> {
-            log.info("[REQUEST]: path: /user/{}", userId);
-
-
+            log.info("[REQUEST]: path: /user/create-new + {}", createUserIn);
+            userService.createNewUser(createUserIn);
             log.info("[RESPONSE]: res: Success!");
             return Collections.emptyMap();
         });
     }
 
-    @PostMapping(value = "/delete/{userId}", produces = "application/json")
+    @PostMapping(value = "/update", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> deleteUser(@PathVariable("userId") String userId) {
+    public DeferredResult<ResponseEntity<?>> updateUser(@RequestBody UpdateUserIn userRequest) {
         return responseEntityDeferredResult(() -> {
-            log.info("[REQUEST]: path: /detail/{}", userId);
-
+            log.info("[REQUEST]: path: /user/update + {}", userRequest);
+            userService.updateUser(userRequest);
             log.info("[RESPONSE]: res: Success!");
             return Collections.emptyMap();
+        });
+    }
+
+    @PostMapping(value = "/delete", produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('admin') ")
+    public DeferredResult<ResponseEntity<?>> deleteUser(@RequestBody DeleteUserIn dto) {
+        return responseEntityDeferredResult(() -> {
+            log.info("[REQUEST]: path: /delete/{}", dto.getUserId());
+            userService.deleteUser(dto.getUserId());
+            log.info("[RESPONSE]: res: Success!");
+            return Collections.emptyMap();
+        });
+    }
+
+    @PostMapping(value = "/delete/group", produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('admin') ")
+    public DeferredResult<ResponseEntity<?>> deleteUserFromGroup(@RequestBody DeleteUserGroupIn dto) {
+        return responseEntityDeferredResult(() -> {
+            log.info("[REQUEST]: path: /delete/group + userId: {} + groupId: {}", dto.getUserId(), dto.getGroupId());
+            userService.deleteUserFromGroup(dto);
+            log.info("[RESPONSE]: res: Success!");
+            return Collections.emptyMap();
+        });
+    }
+
+    @GetMapping(value = "/group/list-filter", produces = "application/json")
+    @PreAuthorize("hasAnyAuthority('admin')")
+    public DeferredResult<ResponseEntity<?>> groupList() {
+        return responseEntityDeferredResult(() -> {
+            log.info("[REQUEST]: path: /group/list-filter");
+            var rs = userService.groupList();
+            log.info("[RESPONSE]: res: Success!");
+            return rs;
         });
     }
 
