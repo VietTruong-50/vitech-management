@@ -1,5 +1,6 @@
 package vn.vnpt.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -31,7 +32,7 @@ public class InventoryController extends AbstractResponseController {
     @PreAuthorize("hasAnyAuthority('staff', 'admin') ")
     public DeferredResult<ResponseEntity<?>> createNewProduct(@RequestPart(value = "images") MultipartFile[] images,
                                                               @RequestPart(value = "featureImage") MultipartFile featureImage,
-                                                              @RequestPart CreateProductIn productIn) {
+                                                              @RequestPart @Valid CreateProductIn productIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /v1/product/create-new");
             inventoryService.createNewProduct(productIn, featureImage, images);
@@ -44,7 +45,7 @@ public class InventoryController extends AbstractResponseController {
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> updateProduct(@RequestPart(value = "images", required = false) MultipartFile[] images,
                                                            @RequestPart(value = "featureImage", required = false) MultipartFile featureImage,
-                                                           @RequestPart UpdateProductIn updatedProduct) {
+                                                           @RequestPart @Valid UpdateProductIn updatedProduct) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /products/update");
             inventoryService.updateProduct(updatedProduct, featureImage, images);

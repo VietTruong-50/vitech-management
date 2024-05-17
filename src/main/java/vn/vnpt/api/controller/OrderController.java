@@ -1,5 +1,6 @@
 package vn.vnpt.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class OrderController extends AbstractResponseController {
 
     @GetMapping(value = "/detail")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> getOrderDetail(@RequestBody OrderDetailIn orderDetailIn) {
+    public DeferredResult<ResponseEntity<?>> getOrderDetail(@RequestBody @Valid OrderDetailIn orderDetailIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /management/order/detail");
             var rs = orderService.getOrderDetail(orderDetailIn.getOrderId());
@@ -47,7 +48,7 @@ public class OrderController extends AbstractResponseController {
 
     @PostMapping(value = "/update-status")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> updateOrderStatus(@RequestBody UpdateOrderStatus updateOrderStatus) {
+    public DeferredResult<ResponseEntity<?>> updateOrderStatus(@RequestBody @Valid UpdateOrderStatus updateOrderStatus) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /management/order/update-status");
             orderService.updateOrderStatus(updateOrderStatus);

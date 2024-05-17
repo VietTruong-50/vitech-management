@@ -1,5 +1,6 @@
 package vn.vnpt.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class UserController extends AbstractResponseController {
 
     @PostMapping(value = "/list-filter", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> getAllUsers(@RequestBody UserListIn userListIn, SortPageIn sortPageIn) {
+    public DeferredResult<ResponseEntity<?>> getAllUsers(@RequestBody @Valid UserListIn userListIn, SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /user/list-filter");
             var rs = userService.getAllUsers(sortPageIn, userListIn);
@@ -36,7 +37,7 @@ public class UserController extends AbstractResponseController {
 
     @PostMapping(value = "/create-new", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> createNewUser(@RequestBody CreateUserIn createUserIn) {
+    public DeferredResult<ResponseEntity<?>> createNewUser(@RequestBody @Valid CreateUserIn createUserIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /user/create-new + {}", createUserIn);
             userService.createNewUser(createUserIn);
@@ -47,7 +48,7 @@ public class UserController extends AbstractResponseController {
 
     @PostMapping(value = "/update", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> updateUser(@RequestBody UpdateUserIn userRequest) {
+    public DeferredResult<ResponseEntity<?>> updateUser(@RequestBody @Valid UpdateUserIn userRequest) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /user/update + {}", userRequest);
             userService.updateUser(userRequest);
@@ -58,7 +59,7 @@ public class UserController extends AbstractResponseController {
 
     @PostMapping(value = "/delete", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> deleteUser(@RequestBody DeleteUserIn dto) {
+    public DeferredResult<ResponseEntity<?>> deleteUser(@RequestBody @Valid DeleteUserIn dto) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /delete/{}", dto.getUserId());
             userService.deleteUser(dto.getUserId());
@@ -69,7 +70,7 @@ public class UserController extends AbstractResponseController {
 
     @PostMapping(value = "/delete/group", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('admin') ")
-    public DeferredResult<ResponseEntity<?>> deleteUserFromGroup(@RequestBody DeleteUserGroupIn dto) {
+    public DeferredResult<ResponseEntity<?>> deleteUserFromGroup(@RequestBody @Valid DeleteUserGroupIn dto) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /delete/group + userId: {} + groupId: {}", dto.getUserId(), dto.getGroupId());
             userService.deleteUserFromGroup(dto);

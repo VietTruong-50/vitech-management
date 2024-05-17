@@ -38,8 +38,8 @@ public class StatisticController extends AbstractResponseController {
     @GetMapping(value = "/orders")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> statisticSuccessOrder(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-                                                                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
-                                                                                      SortPageIn sortPageIn) {
+                                                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+                                                                   SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /statistic/orders");
             var result = statisticService.statisticSuccessOrder(startDate, endDate, sortPageIn);

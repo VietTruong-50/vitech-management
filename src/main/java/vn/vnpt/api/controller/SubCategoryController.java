@@ -1,5 +1,6 @@
 package vn.vnpt.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class SubCategoryController  extends AbstractResponseController {
 
     @PostMapping(value = "/create-new")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> createNewSubCategory(@RequestBody CreateSubCategoryIn subCategoryIn) {
+    public DeferredResult<ResponseEntity<?>> createNewSubCategory(@RequestBody @Valid CreateSubCategoryIn subCategoryIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /create-new");
             subCategoryService.createSubCategory(subCategoryIn);
@@ -68,7 +69,7 @@ public class SubCategoryController  extends AbstractResponseController {
 
     @PostMapping(value = "/update", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> updateSubCategory(@RequestBody UpdateSubCategoryIn subCategoryIn) {
+    public DeferredResult<ResponseEntity<?>> updateSubCategory(@RequestBody @Valid UpdateSubCategoryIn subCategoryIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /sub-category/update");
             subCategoryService.updateSubCategory(subCategoryIn);
