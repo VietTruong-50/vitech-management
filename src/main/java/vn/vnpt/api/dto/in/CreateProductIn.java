@@ -25,7 +25,6 @@ public class CreateProductIn {
     @NotBlank
     private String summary;
     private List<String> tagIds;
-    @NotNull
     private Long price;
     @NotNull
     private Long actualPrice;

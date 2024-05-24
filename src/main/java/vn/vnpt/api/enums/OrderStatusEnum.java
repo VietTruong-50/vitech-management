@@ -7,11 +7,11 @@ public enum OrderStatusEnum {
     // Đơn hàng đang chờ xác nhận và xử lý
     PENDING(1),
 
-    // Đơn hàng đã xác nhận
-    CONFIRMED(2),
+    // Đơn hàng đã xác nhận và chờ xử lý
+    CONFIRMED_AND_PROCESSING(2),
 
-    // Đơn hàng đang xử lý
-    PROCESSING(3),
+//    // Đơn hàng đang xử lý
+//    PROCESSING(3),
 
     // Đơn hàng đang trong quá trình giao hàng
     SHIPPED(4),

@@ -27,7 +27,7 @@ public class OrderController extends AbstractResponseController {
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> listOrder(OrderStatusEnum orderStatusEnum, SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
-            log.info("[REQUEST]: path: /management/order/list-filter");
+            log.info("[REQUEST]: path: /management/order/list-filter, {}", orderStatusEnum);
             var rs = orderService.getAllOrders(orderStatusEnum, sortPageIn);
             log.info("[RESPONSE]: res: Success!");
             return rs;

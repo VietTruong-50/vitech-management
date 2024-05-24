@@ -46,6 +46,8 @@ public class ProcedureCallerV3 {
 						declareParameters.add(new SqlParameter(parameter.getName(), Types.NUMERIC));
 					} else if (parameter.getType().equals(Date.class)) {
 						declareParameters.add(new SqlParameter(parameter.getName(), Types.TIMESTAMP));
+					} else if (parameter.getType().equals(Boolean.class)) {
+						declareParameters.add(new SqlParameter(parameter.getName(), Types.BOOLEAN));
 					} else {
 						throw new IllegalStateException("Not support type: " + parameter.getType());
 					}

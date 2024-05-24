@@ -9,4 +9,5 @@ public class UpdateOrderStatus {
     @NotBlank
     private String orderId;
     private OrderStatusEnum orderStatusEnum;
+    private boolean confirmRefund;
 }

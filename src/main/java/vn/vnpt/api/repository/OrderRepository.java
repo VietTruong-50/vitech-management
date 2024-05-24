@@ -52,6 +52,7 @@ public class OrderRepository {
 
         Map<String, Object> outputs = procedureCallerV3.callOneRefCursor("order_list_filter",
                 List.of(
+                        ProcedureParameter.inputParam("prs_customer_id", String.class, null),
                         ProcedureParameter.inputParam("prs_status", String.class, status),
                         ProcedureParameter.inputParam("prs_properties_sort", String.class, sortPageIn.getPropertiesSort()),
                         ProcedureParameter.inputParam("prs_sort", String.class, sortPageIn.getSort()),
@@ -75,11 +76,21 @@ public class OrderRepository {
         var outputs = procedureCallerV3.callNoRefCursor("order_update_status", List.of(
                 ProcedureParameter.inputParam("prs_order_id", String.class, updateOrderStatus.getOrderId()),
                 ProcedureParameter.inputParam("prs_status", Integer.class, updateOrderStatus.getOrderStatusEnum().value),
+                ProcedureParameter.inputParam("prs_confirm_refund", Boolean.class, updateOrderStatus.isConfirmRefund()),
                 ProcedureParameter.outputParam("out_result", String.class))
         );
         String result = (String) outputs.get("out_result");
         if (DatabaseStatus.isExist(result)) throw new ApiErrorException(ApiError.fieldExist(result));
         if (!DatabaseStatus.Success.equals(result)) throw new RuntimeException("order_update_status failed!");
+    }
+
+    public void autoUpdateShippedOrder() {
+        var outputs = procedureCallerV3.callNoRefCursor("order_auto_update_status",
+                List.of(ProcedureParameter.outputParam("out_result", String.class))
+        );
+        String result = (String) outputs.get("out_result");
+        if (DatabaseStatus.isExist(result)) throw new ApiErrorException(ApiError.fieldExist(result));
+        if (!DatabaseStatus.Success.equals(result)) throw new RuntimeException("order_auto_update_status failed!");
     }
 
     public void destroyOrder(String orderId) {

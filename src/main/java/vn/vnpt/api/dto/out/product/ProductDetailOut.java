@@ -39,6 +39,8 @@ public class ProductDetailOut {
 
     private Map<String, Object> parameters;
 
+    private Map<String, List<ProductAttributeOut>> attributes;
+
     private List<TagProduct> tagProducts;
 
     @Data

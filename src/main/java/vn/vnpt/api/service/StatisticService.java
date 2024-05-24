@@ -15,9 +15,10 @@ public interface StatisticService {
 
      PagingOut<OrderListOut> statisticSuccessOrder(LocalDate startDate, LocalDate endDate, SortPageIn sortPageIn);
 
-     List<TopSellerProducts> top5seller(LocalDate startDate, LocalDate endDate);
+     List<TopSellerProducts> getProductReports(LocalDate startDate, LocalDate endDate, int type);
 
      List<Long> getRevenue(Integer year);
 
      List<OrderStatusStatistic> getOrderStatus(Integer year);
+
 }

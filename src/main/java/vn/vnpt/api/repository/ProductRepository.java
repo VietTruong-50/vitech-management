@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import vn.vnpt.api.dto.in.CreateProductIn;
 import vn.vnpt.api.dto.in.ProductFilterIn;
 import vn.vnpt.api.dto.in.UpdateProductIn;
+import vn.vnpt.api.dto.out.product.ProductAttributeOut;
 import vn.vnpt.api.dto.out.product.ProductDetailOut;
 import vn.vnpt.api.dto.out.product.ProductListOut;
 import vn.vnpt.api.dto.out.product.attribute.AttributeListOut;
@@ -216,5 +217,18 @@ public class ProductRepository {
         List<ProductListOut> outList = (List<ProductListOut>) outputs.get("out_cur");
 
         return PagingOut.of((Number) outputs.get("out_total"), sortPageIn, outList);
+    }
+
+    public List<ProductAttributeOut> getProductAttribute(String productId) {
+        var outputs = procedureCallerV3.callOneRefCursor("product_attribute_detail",
+                List.of(
+                        ProcedureParameter.inputParam("prs_product_id", String.class, productId),
+                        ProcedureParameter.outputParam("out_result", String.class),
+                        ProcedureParameter.refCursorParam("out_cur")
+                ),
+                ProductAttributeOut.class
+        );
+
+        return (List<ProductAttributeOut>) outputs.get("out_cur");
     }
 }

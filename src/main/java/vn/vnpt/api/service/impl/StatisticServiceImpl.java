@@ -38,8 +38,8 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<TopSellerProducts> top5seller(LocalDate startDate, LocalDate endDate) {
-        return statisticRepository.getTopSellerProducts(startDate, endDate, 5);
+    public List<TopSellerProducts> getProductReports(LocalDate startDate, LocalDate endDate, int type) {
+        return statisticRepository.getTopSellerProducts(startDate, endDate, 5, type);
     }
 
     @Override
@@ -61,4 +61,5 @@ public class StatisticServiceImpl implements StatisticService {
         }
         return orderNumbers;
     }
+
 }

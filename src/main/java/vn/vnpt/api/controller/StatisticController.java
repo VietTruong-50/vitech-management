@@ -49,13 +49,14 @@ public class StatisticController extends AbstractResponseController {
     }
 
 
-    @GetMapping(value = "/top-sellers", produces = "application/json")
+    @GetMapping(value = "/reports", produces = "application/json")
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
-    public DeferredResult<ResponseEntity<?>> getTop5Seller(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate) {
+    public DeferredResult<ResponseEntity<?>> getProductReports(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+                                                               @RequestParam int type) {
         return responseEntityDeferredResult(() -> {
-            log.info("[REQUEST]: path: /statistic/top-sellers");
-            var result = statisticService.top5seller(startDate, endDate);
+            log.info("[REQUEST]: path: /statistic/reports");
+            var result = statisticService.getProductReports(startDate, endDate, type);
             log.info("[RESPONSE]: res: Success!");
             return result;
         });
@@ -75,5 +76,6 @@ public class StatisticController extends AbstractResponseController {
             return statistics;
         });
     }
+
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.vnpt.api.dto.in.CreateProductIn;
 import vn.vnpt.api.dto.in.ProductFilterIn;
 import vn.vnpt.api.dto.in.UpdateProductIn;
+import vn.vnpt.api.dto.out.product.ProductAttributeOut;
 import vn.vnpt.api.dto.out.product.ProductDetailOut;
 import vn.vnpt.api.dto.out.product.ProductListOut;
 import vn.vnpt.api.dto.out.product.attribute.AttributeListOut;
@@ -25,9 +26,7 @@ import vn.vnpt.common.Common;
 import vn.vnpt.common.model.PagingOut;
 import vn.vnpt.common.model.SortPageIn;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -157,6 +156,18 @@ public class InventoryServiceImpl implements InventoryService {
         var rs = productRepository.getProductDetail(productId);
 
         try {
+            var attributes = productRepository.getProductAttribute(productId);
+
+            Map<String, List<ProductAttributeOut>> groupedAttributes = new HashMap<>();
+            for (ProductAttributeOut attribute : attributes) {
+                String name = attribute.getName();
+                if (!groupedAttributes.containsKey(name)) {
+                    groupedAttributes.put(name, new ArrayList<>());
+                }
+                groupedAttributes.get(name).add(attribute);
+            }
+
+            rs.setAttributes(groupedAttributes);
             rs.setParameters(objectMapper.readValue(rs.getParametersJson(), new TypeReference<>() {
             }));
             rs.setTagProducts(productRepository.getProductTags(productId));

@@ -44,6 +44,24 @@ public class OrderListOut {
     @Col("updated_date")
     private String updatedDate;
 
+    @Col("confirmed_date")
+    private String confirmedDate;
+
+    @Col("shipped_date")
+    private String shippedDate;
+
+    @Col("cancel_date")
+    private String cancelDate;
+
+    @Col("refund_date")
+    private String refundDate;
+
+    @Col("success_date")
+    private String successDate;
+
+    @Col("confirm_refund")
+    private boolean confirmRefund;
+
     private List<OrderDetailOut> orderDetailOuts;
 
 }

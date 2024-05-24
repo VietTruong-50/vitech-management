@@ -15,4 +15,6 @@ public class TopSellerProducts {
     private Long actualPrice;
     @Col("total_sold")
     private Long totalSold;
+    @Col("activity_count")
+    private Long totalView;
 }

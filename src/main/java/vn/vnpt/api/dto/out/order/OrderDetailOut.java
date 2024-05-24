@@ -15,4 +15,6 @@ public class OrderDetailOut {
     private Long price;
     @Col("quantity")
     private Integer quantity;
+    @Col("attribute")
+    private String attribute;
 }
