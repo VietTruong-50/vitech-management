@@ -91,7 +91,7 @@ public class UserController extends AbstractResponseController {
     }
 
     @GetMapping(value = "/customers/detail", produces = "application/json")
-    @PreAuthorize("hasAnyAuthority('admin') ")
+    @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> getCustomerDetail(@RequestParam String customerId) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /customers/detail, {}", customerId);
@@ -102,7 +102,7 @@ public class UserController extends AbstractResponseController {
     }
 
     @GetMapping(value = "/customers/list-filter", produces = "application/json")
-    @PreAuthorize("hasAnyAuthority('admin') ")
+    @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> findAllCustomers(SortPageIn sortPageIn) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /customers/list-filter");
