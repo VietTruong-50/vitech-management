@@ -40,11 +40,12 @@ public class ProductRepository {
         return (List<AttributeListOut>) outputs.get("out_cur");
     }
 
-    public void addAttribute(String value, String attributeId, String productId) {
+    public void addAttribute(String value, String attributeId, String productId, Long priceAdd) {
         var outputs = procedureCallerV3.callNoRefCursor("attribute_product_create_new", List.of(
                 ProcedureParameter.inputParam("prs_attribute_id", String.class, attributeId),
                 ProcedureParameter.inputParam("prs_product_id", String.class, productId),
                 ProcedureParameter.inputParam("prs_value", String.class, value),
+                ProcedureParameter.inputParam("prs_price_add", Long.class, priceAdd),
                 ProcedureParameter.outputParam("out_result", String.class))
         );
         String result = (String) outputs.get("out_result");

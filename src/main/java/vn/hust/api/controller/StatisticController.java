@@ -77,5 +77,16 @@ public class StatisticController extends AbstractResponseController {
         });
     }
 
-
+    @GetMapping(value = "/report-revenue")
+    @PreAuthorize("hasAnyAuthority('staff', 'admin')")
+    public DeferredResult<ResponseEntity<?>> getReportRevenue(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+                                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+                                                              @RequestParam int type) {
+        return responseEntityDeferredResult(() -> {
+            log.info("[REQUEST]: path: /report-revenue");
+            var report = statisticService.getReportRevenue(startDate, endDate, type);
+            log.info("[RESPONSE]: res: Success!");
+            return report;
+        });
+    }
 }

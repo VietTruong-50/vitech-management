@@ -21,4 +21,5 @@ public interface StatisticService {
 
      List<OrderStatusStatistic> getOrderStatus(Integer year);
 
+     Object getReportRevenue(LocalDate startDate, LocalDate endDate, int type);
 }

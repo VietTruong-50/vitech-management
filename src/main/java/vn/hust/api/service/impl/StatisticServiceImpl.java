@@ -62,4 +62,9 @@ public class StatisticServiceImpl implements StatisticService {
         return orderNumbers;
     }
 
+    @Override
+    public Object getReportRevenue(LocalDate startDate, LocalDate endDate, int type) {
+        return statisticRepository.getReportRevenue(startDate, endDate, type);
+    }
+
 }

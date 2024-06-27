@@ -79,10 +79,13 @@ public class InventoryServiceImpl implements InventoryService {
 
         if (!Common.isNullOrEmpty(createProductIn.getAttributes())) {
             for (String key : createProductIn.getAttributes().keySet()) {
-                List<String> values = createProductIn.getAttributes().get(key);
+                List<Map<String, Object>> attributeDetailsList = createProductIn.getAttributes().get(key);
 
-                for (String value : values) {
-                    productRepository.addAttribute(value, key, productId);
+                for (Map<String, Object> attributeDetails : attributeDetailsList) {
+                    String value = (String) attributeDetails.get("value");
+                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? (Long) attributeDetails.get("priceAdd") : 0;
+
+                    productRepository.addAttribute(value, key, productId, priceAddStr);
                 }
             }
         }
@@ -125,11 +128,16 @@ public class InventoryServiceImpl implements InventoryService {
 
         productRepository.updateProduct(updateProductIn, fileRes.getUrl(), list);
 
-        for (String key : updateProductIn.getAttributes().keySet()) {
-            List<String> values = updateProductIn.getAttributes().get(key);
+        if (!Common.isNullOrEmpty(updateProductIn.getAttributes())) {
+            for (String key : updateProductIn.getAttributes().keySet()) {
+                List<Map<String, Object>> attributeDetailsList = updateProductIn.getAttributes().get(key);
 
-            for (String value : values) {
-                productRepository.updateAttribute(value, key, updateProductIn.getProductId());
+                for (Map<String, Object> attributeDetails : attributeDetailsList) {
+                    String value = (String) attributeDetails.get("value");
+                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? (Long) attributeDetails.get("priceAdd") : 0;
+
+                    productRepository.addAttribute(value, key, updateProductIn.getProductId(), priceAddStr);
+                }
             }
         }
     }

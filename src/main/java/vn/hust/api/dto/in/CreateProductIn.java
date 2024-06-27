@@ -30,5 +30,5 @@ public class CreateProductIn {
     private Long actualPrice;
     private ProductStatusEnum status;
     private Map<String, Object> parameters;
-    private Map<String, List<String>> attributes;
+    private Map<String, List<Map<String, Object>>> attributes;
 }

@@ -2,6 +2,7 @@ package vn.hust.api.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import vn.hust.api.dto.out.statistic.ReportStatisticOut;
 import vn.hust.api.dto.out.statistic.StatisticalData;
 import vn.hust.api.dto.out.statistic.TopSellerProducts;
 import vn.hust.api.repository.helper.ProcedureCallerV3;
@@ -77,5 +78,15 @@ public class StatisticRepository {
                 ProcedureParameter.refCursorParam("out_cur")
         ), TopSellerProducts.class);
         return (List<TopSellerProducts>) outputs.get("out_cur");
+    }
+
+    public List<ReportStatisticOut> getReportRevenue(LocalDate startDate, LocalDate endDate, int type) {
+        var outputs = procedureCallerV3.callOneRefCursor("report_statistic", List.of(
+                ProcedureParameter.inputParam("prs_from_date", String.class, !Common.isNullOrEmpty(startDate) ? startDate.toString() : null),
+                ProcedureParameter.inputParam("prs_to_date", String.class, !Common.isNullOrEmpty(endDate) ? endDate.toString() : null),
+                ProcedureParameter.inputParam("prs_type", Integer.class, type),
+                ProcedureParameter.refCursorParam("out_cur")
+        ), ReportStatisticOut.class);
+        return (List<ReportStatisticOut>) outputs.get("out_cur");
     }
 }
