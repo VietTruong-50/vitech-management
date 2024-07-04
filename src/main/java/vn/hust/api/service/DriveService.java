@@ -13,4 +13,6 @@ public interface DriveService {
     void deleteFolder(String folderId);
 
     void deleteImage(String fileId);
+
+    void renameFolder(String name, String folderId);
 }

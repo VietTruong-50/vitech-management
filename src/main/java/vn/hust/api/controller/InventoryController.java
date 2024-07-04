@@ -34,7 +34,7 @@ public class InventoryController extends AbstractResponseController {
                                                               @RequestPart(value = "featureImage") MultipartFile featureImage,
                                                               @RequestPart @Valid CreateProductIn productIn) {
         return responseEntityDeferredResult(() -> {
-            log.info("[REQUEST]: path: /v1/product/create-new");
+            log.info("[REQUEST]: path: /v1/product/create-new, createProductIn: {}", productIn);
             inventoryService.createNewProduct(productIn, featureImage, images);
             log.info("[RESPONSE]: res: Success!");
             return Collections.emptyMap();
@@ -45,10 +45,11 @@ public class InventoryController extends AbstractResponseController {
     @PreAuthorize("hasAnyAuthority('staff', 'admin')")
     public DeferredResult<ResponseEntity<?>> updateProduct(@RequestPart(value = "images", required = false) MultipartFile[] images,
                                                            @RequestPart(value = "featureImage", required = false) MultipartFile featureImage,
+                                                           @RequestPart(value = "featureImageChange", required = false) String featureImageChange,
                                                            @RequestPart @Valid UpdateProductIn updatedProduct) {
         return responseEntityDeferredResult(() -> {
             log.info("[REQUEST]: path: /products/update");
-            inventoryService.updateProduct(updatedProduct, featureImage, images);
+            inventoryService.updateProduct(updatedProduct, featureImage, images, featureImageChange);
             log.info("[RESPONSE]: res: Success!");
             return Collections.emptyMap();
         });

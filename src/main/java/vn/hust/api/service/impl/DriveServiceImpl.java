@@ -164,4 +164,19 @@ public class DriveServiceImpl implements DriveService {
         }
     }
 
+    @Override
+    public void renameFolder(String name, String folderId) {
+        try {
+            Drive drive = createDriveService();
+
+            File file = new File();
+            file.setName(name);
+
+            drive.files().update(folderId, file).execute();
+            System.out.println("Folder renamed successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

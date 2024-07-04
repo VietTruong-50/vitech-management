@@ -2,6 +2,7 @@ package vn.hust.api.service.impl;
 
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KeycloakServiceImpl implements KeycloakService {
 
     private final RealmResource realmResource;
@@ -86,9 +88,9 @@ public class KeycloakServiceImpl implements KeycloakService {
         Response response = usersResource.create(userRepresentation);
 
         if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-            System.out.println("User created successfully");
+            log.info("User created successfully");
         } else {
-            System.err.println("Failed to create user");
+            log.info("Failed to create user");
         }
 
     }

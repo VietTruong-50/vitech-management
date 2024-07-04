@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface InventoryService {
     void createNewProduct(CreateProductIn createProductIn, MultipartFile file, MultipartFile[] images);
-    void updateProduct(UpdateProductIn updateProductIn, MultipartFile file, MultipartFile[] images);
+    void updateProduct(UpdateProductIn updateProductIn, MultipartFile file, MultipartFile[] images, String featureImageChange);
     void deleteProduct(String productId);
     PagingOut<ProductListOut> listAllProducts(SortPageIn sortPageIn);
     ProductDetailOut getProductDetail(String productId);
