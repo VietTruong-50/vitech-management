@@ -94,7 +94,7 @@ public class InventoryServiceImpl implements InventoryService {
 
                 for (Map<String, Object> attributeDetails : attributeDetailsList) {
                     String value = (String) attributeDetails.get("value");
-                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? (Long) attributeDetails.get("priceAdd") : 0;
+                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? ((Number) attributeDetails.get("priceAdd")).longValue() : 0L;
                     log.info("Adding attribute with key: {}, value: {}, priceAdd: {}", key, value, priceAddStr);
 
                     productRepository.addAttribute(value, key, productId, priceAddStr);
@@ -106,24 +106,28 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void updateProduct(UpdateProductIn updateProductIn, MultipartFile file, MultipartFile[] images, String featureImageChange) {
+    public void updateProduct(UpdateProductIn updateProductIn, MultipartFile file, MultipartFile[] images) {
         var productDetail = productRepository.getProductDetail(updateProductIn.getProductId());
 
-        var list = Arrays.stream(productDetail.getImageLinks().replaceAll("\\[", "")
-                        .replaceAll("\\]", "").split(",")).map(String::trim)
-                .collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
 
-        String folderId = driveService.checkFolderExists(updateProductIn.getName());
-
-        if (!Common.isNullOrEmpty(folderId)) {
-            driveService.renameFolder(updateProductIn.getName(), folderId);
-
-//            //delete old folder
-//            String oldFolderId = driveService.checkFolderExists(productDetail.getName());
-//            if (Common.isNullOrEmpty(oldFolderId)) driveService.deleteFolder(oldFolderId);
-        } else {
-            throw new BadRequestException("folder exist");
+        if (!Common.isNullOrEmpty(productDetail.getImageLinks())) {
+            list = Arrays.stream(productDetail.getImageLinks().replaceAll("\\[", "")
+                            .replaceAll("\\]", "").split(",")).map(String::trim)
+                    .collect(Collectors.toList());
         }
+
+        String folderId = driveService.checkFolderExists(productDetail.getName());
+        String existFolderId = driveService.checkFolderExists(updateProductIn.getName());
+
+        if (!Common.isNullOrEmpty(folderId) && !existFolderId.equals(folderId)) {
+            if (Common.isNullOrEmpty(existFolderId)) {
+                driveService.renameFolder(updateProductIn.getName(), folderId);
+            } else {
+                throw new BadRequestException("folder is exist");
+            }
+        }
+
 
         if (!updateProductIn.getImageDelete().isEmpty()) {
             for (var image : updateProductIn.getImageDelete()) {
@@ -132,17 +136,20 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
-        var fileRes = driveService.uploadImageToDrive(file, folderId);
+//        DriveServiceImpl.Res fileRes = null;
+//        if (file != null) {
+//            fileRes = driveService.uploadImageToDrive(file, folderId);
+//        }
 
-        if (!Common.isNullOrEmpty(images)) {
-            for (var it : images) {
-                var img = driveService.uploadImageToDrive(it, folderId);
+//        if (!Common.isNullOrEmpty(images)) {
+//            for (var it : images) {
+//                var img = driveService.uploadImageToDrive(it, folderId);
+//
+//                list.add(img.getUrl());
+//            }
+//        }
 
-                list.add(img.getUrl());
-            }
-        }
-
-        productRepository.updateProduct(updateProductIn, fileRes.getUrl(), list);
+        productRepository.updateProduct(updateProductIn, updateProductIn.getFeatureImageChange(), list);
 
         if (!Common.isNullOrEmpty(updateProductIn.getAttributes())) {
             log.info("Adding attributes to the product...");
@@ -151,7 +158,7 @@ public class InventoryServiceImpl implements InventoryService {
 
                 for (Map<String, Object> attributeDetails : attributeDetailsList) {
                     String value = (String) attributeDetails.get("value");
-                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? (Long) attributeDetails.get("priceAdd") : 0;
+                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? ((Number) attributeDetails.get("priceAdd")).longValue() : 0L;
                     log.info("Adding attribute with key: {}, value: {}, priceAdd: {}", key, value, priceAddStr);
 
                     productRepository.addAttribute(value, key, productDetail.getId(), priceAddStr);

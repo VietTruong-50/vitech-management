@@ -31,6 +31,7 @@ public class UpdateProductIn {
     @NotNull
     private Long actualPrice;
     private List<String> imageDelete;
+    private String featureImageChange;
     private ProductStatusEnum status;
     private Map<String, Object> parameters;
     private Map<String, List<Map<String, Object>>> attributes;

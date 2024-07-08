@@ -1,6 +1,8 @@
 package vn.hust.api.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import vn.hust.api.dto.in.UpdateOrderStatus;
@@ -14,6 +16,7 @@ import vn.hust.common.model.SortPageIn;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -41,6 +44,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void destroyOrder(String orderId) {
         orderRepository.destroyOrder(orderId);
+    }
+
+    @PostConstruct
+    private void init() {
+        log.info("Auto update order status!!!");
+        autoUpdateShippedOrder();
     }
 
     @Scheduled(cron = "0 0 0 * * *")
