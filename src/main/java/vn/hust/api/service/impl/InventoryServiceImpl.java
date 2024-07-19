@@ -48,6 +48,7 @@ public class InventoryServiceImpl implements InventoryService {
         var userId = jwt.getClaims().get("sub").toString();
         log.info("Starting product creation for user: {}", userId);
 
+        // Create Google Drive folder and upload main image
         var folderId = driveService.createFolder(createProductIn.getName());
         log.info("Created Google Drive folder with ID: {}", folderId);
 
@@ -57,65 +58,69 @@ public class InventoryServiceImpl implements InventoryService {
         List<String> imageUrlList = new ArrayList<>();
         imageUrlList.add(fileRes.getUrl());
 
+        // Upload additional images
         if (!Common.isNullOrEmpty(images)) {
             log.info("Uploading additional images...");
-            for (var it : images) {
-                var img = driveService.uploadImageToDrive(it, folderId);
+            for (var image : images) {
+                var img = driveService.uploadImageToDrive(image, folderId);
                 log.info("Uploaded additional image to Drive with URL: {}", img.getUrl());
-
                 imageUrlList.add(img.getUrl());
             }
         }
 
+        // Process and create tags if necessary
         if (!Common.isNullOrEmpty(createProductIn.getTagIds())) {
             log.info("Processing tags for the product...");
-            var listTag = tagRepository.listAllByCategory(createProductIn.getCategoryId());
-            var productTagsId = createProductIn.getTagIds();
-
-            for (String tagId : productTagsId) {
-                var existed = listTag.stream().map(TagListOut::getTagId).toList().contains(tagId) || listTag.stream().map(TagListOut::getTagName).toList().contains(tagId);
-
-                if (!existed) {
-                    log.info("Creating new tag with id: {}", tagId);
-                    var id = tagRepository.createNewTag(createProductIn.getCategoryId(), tagId);
-                    productTagsId.add(id);
-                }
-            }
-            createProductIn.setTagIds(productTagsId);
+            processTags(createProductIn);
         }
 
+        // Create new product in repository
         String productId = productRepository.createNewProduct(createProductIn, userId, imageUrlList.get(0), imageUrlList);
         log.info("Created new product with ID: {}", productId);
 
+        // Add attributes to the product
         if (!Common.isNullOrEmpty(createProductIn.getAttributes())) {
             log.info("Adding attributes to the product...");
-            for (String key : createProductIn.getAttributes().keySet()) {
-                List<Map<String, Object>> attributeDetailsList = createProductIn.getAttributes().get(key);
-
-                for (Map<String, Object> attributeDetails : attributeDetailsList) {
-                    String value = (String) attributeDetails.get("value");
-                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? ((Number) attributeDetails.get("priceAdd")).longValue() : 0L;
-                    log.info("Adding attribute with key: {}, value: {}, priceAdd: {}", key, value, priceAddStr);
-
-                    productRepository.addAttribute(value, key, productId, priceAddStr);
-                }
-            }
+            addAttributes(createProductIn.getAttributes(), productId);
         }
 
         log.info("Product creation completed for user: {}", userId);
     }
 
+    private void processTags(CreateProductIn createProductIn) {
+        var listTag = tagRepository.listAllByCategory(createProductIn.getCategoryId());
+        var productTagsId = createProductIn.getTagIds();
+        var existingTagIds = listTag.stream().map(TagListOut::getTagId).collect(Collectors.toSet());
+        var existingTagNames = listTag.stream().map(TagListOut::getTagName).collect(Collectors.toSet());
+
+        for (String tagId : productTagsId) {
+            if (!existingTagIds.contains(tagId) && !existingTagNames.contains(tagId)) {
+                log.info("Creating new tag with id: {}", tagId);
+                var newTagId = tagRepository.createNewTag(createProductIn.getCategoryId(), tagId);
+                productTagsId.add(newTagId);
+            }
+        }
+        createProductIn.setTagIds(productTagsId);
+    }
+
+    private void addAttributes(Map<String, List<Map<String, Object>>> attributes, String productId) {
+        for (var entry : attributes.entrySet()) {
+            var key = entry.getKey();
+            var attributeDetailsList = entry.getValue();
+
+            for (var attributeDetails : attributeDetailsList) {
+                var value = (String) attributeDetails.get("value");
+                var priceAdd = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? ((Number) attributeDetails.get("priceAdd")).longValue() : 0L;
+                log.info("Adding attribute with key: {}, value: {}, priceAdd: {}", key, value, priceAdd);
+                productRepository.addAttribute(value, key, productId, priceAdd);
+            }
+        }
+    }
+
+
     @Override
     public void updateProduct(UpdateProductIn updateProductIn, MultipartFile file, MultipartFile[] images) {
         var productDetail = productRepository.getProductDetail(updateProductIn.getProductId());
-
-        List<String> list = new ArrayList<>();
-
-        if (!Common.isNullOrEmpty(productDetail.getImageLinks())) {
-            list = Arrays.stream(productDetail.getImageLinks().replaceAll("\\[", "")
-                            .replaceAll("\\]", "").split(",")).map(String::trim)
-                    .collect(Collectors.toList());
-        }
 
         String folderId = driveService.checkFolderExists(productDetail.getName());
         String existFolderId = driveService.checkFolderExists(updateProductIn.getName());
@@ -128,6 +133,24 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
+        List<String> list = new ArrayList<>();
+
+        if (!Common.isNullOrEmpty(productDetail.getImageLinks())) {
+            list = Arrays.stream(productDetail.getImageLinks().replaceAll("\\[", "")
+                            .replaceAll("\\]", "").split(",")).map(String::trim)
+                    .collect(Collectors.toList());
+        }
+
+
+        if (!Common.isNullOrEmpty(images)) {
+            log.info("Uploading additional images...");
+            for (var it : images) {
+                var img = driveService.uploadImageToDrive(it, folderId);
+                log.info("Uploaded additional image to Drive with URL: {}", img.getUrl());
+
+                list.add(img.getUrl());
+            }
+        }
 
         if (!updateProductIn.getImageDelete().isEmpty()) {
             for (var image : updateProductIn.getImageDelete()) {
@@ -136,34 +159,10 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
-//        DriveServiceImpl.Res fileRes = null;
-//        if (file != null) {
-//            fileRes = driveService.uploadImageToDrive(file, folderId);
-//        }
-
-//        if (!Common.isNullOrEmpty(images)) {
-//            for (var it : images) {
-//                var img = driveService.uploadImageToDrive(it, folderId);
-//
-//                list.add(img.getUrl());
-//            }
-//        }
-
         productRepository.updateProduct(updateProductIn, updateProductIn.getFeatureImageChange(), list);
 
         if (!Common.isNullOrEmpty(updateProductIn.getAttributes())) {
-            log.info("Adding attributes to the product...");
-            for (String key : updateProductIn.getAttributes().keySet()) {
-                List<Map<String, Object>> attributeDetailsList = updateProductIn.getAttributes().get(key);
-
-                for (Map<String, Object> attributeDetails : attributeDetailsList) {
-                    String value = (String) attributeDetails.get("value");
-                    Long priceAddStr = !Common.isNullOrEmpty(attributeDetails.get("priceAdd")) ? ((Number) attributeDetails.get("priceAdd")).longValue() : 0L;
-                    log.info("Adding attribute with key: {}, value: {}, priceAdd: {}", key, value, priceAddStr);
-
-                    productRepository.addAttribute(value, key, productDetail.getId(), priceAddStr);
-                }
-            }
+            addAttributes(updateProductIn.getAttributes(), productDetail.getId());
         }
     }
 

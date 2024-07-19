@@ -12,6 +12,7 @@ import vn.hust.api.dto.out.product.ProductListOut;
 import vn.hust.api.dto.out.product.attribute.AttributeListOut;
 import vn.hust.api.repository.helper.ProcedureCallerV3;
 import vn.hust.api.repository.helper.ProcedureParameter;
+import vn.hust.common.Common;
 import vn.hust.common.constant.DatabaseStatus;
 import vn.hust.common.exception.ApiErrorException;
 import vn.hust.common.exception.NotFoundException;
@@ -101,7 +102,7 @@ public class ProductRepository {
                         ProcedureParameter.inputParam("prs_quantity", Integer.class, updateProductIn.getQuantity()),
                         ProcedureParameter.inputParam("prs_summary", String.class, updateProductIn.getSummary()),
                         ProcedureParameter.inputParam("prs_feature_image_link", String.class, url),
-                        ProcedureParameter.inputParam("prs_parameters", String.class, gson.toJson(updateProductIn.getParameters())),
+                        ProcedureParameter.inputParam("prs_parameters", String.class, !Common.isNullOrEmpty(updateProductIn.getParameters()) ? gson.toJson(updateProductIn.getParameters()): null),
                         ProcedureParameter.inputParam("prs_price", Double.class, updateProductIn.getPrice()),
                         ProcedureParameter.inputParam("prs_actual_price", Double.class, updateProductIn.getActualPrice()),
                         ProcedureParameter.inputParam("prs_tag_ids", String.class, updateProductIn.getTagIds() != null ? String.join(",", updateProductIn.getTagIds()) : ""),
